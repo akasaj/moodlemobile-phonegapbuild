@@ -33,6 +33,7 @@ angular.module('mm.core.login')
             showDelete: false
         };
     });
+            
 
     $scope.toggleDelete = function() {
         $scope.data.showDelete = !$scope.data.showDelete;
@@ -79,8 +80,58 @@ angular.module('mm.core.login')
         });
     };
 
-    $scope.add = function() {
-        $mmLoginHelper.goToAddSite();
+    $scope.add = function(url) {
+        //$mmLoginHelper.goToAddSite();
+                
+       //shtimi i kodit te metodes conect (nga site.js) direkt tek butoni plus (+) dhe caktivizuam metoden goToAddSite()
+                
+        $mmApp.closeKeyboard();
+
+        if (!url) {
+            $mmUtil.showErrorModal('mm.login.siteurlrequired', true);
+            return;
+        }
+
+        var modal = $mmUtil.showModalLoading(),
+            sitedata = $mmSitesManager.getDemoSiteData(url);
+
+        if (sitedata) {
+            // It's a demo site.
+            $mmSitesManager.getUserToken(sitedata.url, sitedata.username, sitedata.password).then(function(data) {
+                $mmSitesManager.newSite(data.siteurl, data.token).then(function() {
+                    $ionicHistory.nextViewOptions({disableBack: true});
+                    return $mmLoginHelper.goToSiteInitialPage();
+                }, function(error) {
+                    $mmUtil.showErrorModal(error);
+                }).finally(function() {
+                    modal.dismiss();
+                });
+            }, function(error) {
+                modal.dismiss();
+                $mmLoginHelper.treatUserTokenError(sitedata.url, error);
+            });
+
+        } else {
+            // Not a demo site.
+            $mmSitesManager.checkSite(url).then(function(result) {
+
+                if (result.warning) {
+                    $mmUtil.showErrorModal(result.warning, true, 4000);
+                }
+
+                if ($mmLoginHelper.isSSOLoginNeeded(result.code)) {
+                    // SSO. User needs to authenticate in a browser.
+                    $mmLoginHelper.confirmAndOpenBrowserForSSOLogin(result.siteurl, result.code);
+                } else {
+                    $state.go('mm_login.credentials', {siteurl: result.siteurl});
+                }
+            }, function(error) {
+                showLoginIssue(url, error);
+            }).finally(function() {
+                modal.dismiss();
+            });
+        }
+
     };
 
 });
