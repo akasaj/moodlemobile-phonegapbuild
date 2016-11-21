@@ -218,7 +218,7 @@
     "mm.login.loginbutton": "Login!",
     "mm.login.logininsiterequired": "You need to log in to the site in a browser window.",
     "mm.login.mobileservicesnotenabled": "Mobile Services are not enabled in your site. Please, contact your UET LMS site administrator if you think mobile access should be enabled.",
-    "mm.login.newsitedescription": "Ju lutem shkruani adresen e sistemit UET LMS lms.uet.edu.al dhe klikoni mbi Connect!",
+    "mm.login.newsitedescription": "Ju lutem klikoni mbi butonin Connect per  tu lidhur me sistemin UET LMS!",
     "mm.login.notloggedin": "You need to be logged in.",
     "mm.login.password": "Password",
     "mm.login.passwordrequired": "Password required",
